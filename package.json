@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Znegl/inky-phat-weather-display/issues"
   },
-  "homepage": "https://github.com/Znegl/inky-phat-weather-display#readme"
+  "homepage": "https://github.com/Znegl/inky-phat-weather-display#readme",
+  "dependencies": {
+    "canvas": "^2.8.0"
+  }
 }

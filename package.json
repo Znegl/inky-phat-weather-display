@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Znegl/inky-phat-weather-display#readme",
   "dependencies": {
-    "canvas": "^2.8.0"
+    "canvas": "^2.8.0",
+    "inkyphat": "^1.3.1"
   }
 }

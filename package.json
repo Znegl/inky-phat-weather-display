@@ -1,0 +1,19 @@
+{
+  "name": "inky-phat-weather-display",
+  "version": "1.0.0",
+  "description": "A weather display for the Inky Phat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Znegl/inky-phat-weather-display.git"
+  },
+  "author": "Thomas Grinderslev <mail@thomasgrinderslev.dk>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Znegl/inky-phat-weather-display/issues"
+  },
+  "homepage": "https://github.com/Znegl/inky-phat-weather-display#readme"
+}

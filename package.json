@@ -4,6 +4,7 @@
   "description": "A weather display for the Inky Phat",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,7 +18,10 @@
   },
   "homepage": "https://github.com/Znegl/inky-phat-weather-display#readme",
   "dependencies": {
+    "axios": "^0.24.0",
     "canvas": "^2.8.0",
+    "detect-rpi": "^1.4.0",
+    "dotenv": "^10.0.0",
     "inkyphat": "^1.3.1"
   }
 }

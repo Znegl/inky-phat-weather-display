@@ -137,7 +137,13 @@ async function update() {
 
   axios.get(hueUrl).then(({data}) => {
     console.log('got data', data.state.temperature)
-    return applyText(Math.round(data.state.temperature / 10) / 10 + '°')
+    const text = Math.round(data.state.temperature / 10) / 10 + '°'
+
+    return applyText(
+      text
+        .replace('.', process.env.DECIMAL_SEPARATOR || '.')
+        .replace('-', '‐')
+    )
   }).catch(error => {
     console.error('axios error', error)
   })

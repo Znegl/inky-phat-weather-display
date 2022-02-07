@@ -99,16 +99,21 @@ async function updateDisplay() {
     }
   }
 
-  await inkyphat.redraw().catch(error => {
-    console.error('Redraw error', error)
+  await redraw(5)
+}
 
-    return new Promise(resolve => {
-      setTimeout(() => {
-        console.log('Retrying...')
+async function redraw(retries = 0) {
+  console.log('wait a little...')
+  await new Promise(resolve => setTimeout(resolve, 1000))
 
-        return inkyphat.redraw()
-      }, 500)
-    })
+  await inkyphat.redraw().then(() => {
+    console.log('Display updated successfully!')
+  }).catch(error => {
+    console.log('Redraw error', error)
+    console.log('Retrying...', retries)
+    if (retries > 0) {
+      redraw(retries--)
+    }
   });
 }
 

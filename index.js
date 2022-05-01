@@ -34,7 +34,7 @@ process.on('SIGINT', async function() {
  */
 function updateCanvas(text, isError) {
   if (isError) {
-    context.fillStyle = '#000'
+    context.fillStyle = '#fff'
     context.fillRect(0, 0, width, height)
 
     context.font = '12pt monospace'

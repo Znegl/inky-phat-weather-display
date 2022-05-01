@@ -30,16 +30,63 @@ process.on('SIGINT', async function() {
 /**
  * Updates the canvas width the given text
  * @param {string} text
+ * @param {boolean=} isError
  */
-function updateCanvas(text) {
-  context.fillStyle = '#000'
-  context.fillRect(0, 0, width, height)
+function updateCanvas(text, isError) {
+  if (isError) {
+    context.fillStyle = '#000'
+    context.fillRect(0, 0, width, height)
 
-  context.font = '60pt Abril Fatface'
-  context.textAlign = 'center'
-  context.textBaseline = 'top'
-  context.fillStyle = '#fff'
-  context.fillText(text, width / 2, -2)
+    context.font = '12pt monospace'
+    context.textAlign = 'left'
+    context.textBaseline = 'top'
+    context.fillStyle = '#f00'
+    fillTextWordWrap(context, text, 10, 7, 15, width- 20);
+    //context.fillText(text, 10, 10, width - 20)
+  } else {
+    context.fillStyle = '#000'
+    context.fillRect(0, 0, width, height)
+
+    context.font = '60pt Abril Fatface'
+    context.textAlign = 'center'
+    context.textBaseline = 'top'
+    context.fillStyle = '#fff'
+    context.fillText(text, width / 2, -2)
+  }
+}
+
+/**
+ * Copied from https://stackoverflow.com/questions/5026961/html5-canvas-ctx-filltext-wont-do-line-breaks
+ */
+function fillTextWordWrap(context, text, x, y, lineHeight, fitWidth) {
+  fitWidth = fitWidth || 0;
+
+  if (fitWidth <= 0) {
+    context.fillText(text, x, y);
+    return;
+  }
+
+  let words = text.split(' ');
+  let currentLine = 0;
+  let idx = 1;
+
+  while (words.length > 0 && idx <= words.length) {
+    var str = words.slice(0, idx).join(' ');
+    var w = context.measureText(str).width;
+    if (w > fitWidth) {
+      if (idx === 1) {
+        idx = 2;
+      }
+      context.fillText(words.slice(0, idx - 1).join(' '), x, y + (lineHeight * currentLine));
+      currentLine++;
+      words = words.splice(idx - 1);
+      idx = 1;
+    } else {
+      idx++;
+    }
+  }
+  if (idx > 0)
+    context.fillText(words.join(' '), x, y + (lineHeight * currentLine));
 }
 
 /**
@@ -120,11 +167,12 @@ async function redraw(retries = 0) {
 /**
  * Applies the given text to the canvas, updates the display (if running on a RPI) and exports the PNG.
  * @param {string} text
+ * @param {boolean=} isError
  * @return {Promise<void>}
  */
-async function applyText(text) {
+async function applyText(text, isError) {
   console.log('apply text', text)
-  updateCanvas(text)
+  updateCanvas(text, isError)
 
   if (isPi()) {
     await updateDisplay()
@@ -151,6 +199,7 @@ async function update() {
     )
   }).catch(error => {
     console.error('axios error', error)
+    return applyText(error.message, true)
   })
 
   console.log('Update completed')

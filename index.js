@@ -42,7 +42,6 @@ function updateCanvas(text, isError) {
     context.textBaseline = 'top'
     context.fillStyle = '#f00'
     fillTextWordWrap(context, text, 10, 7, 15, width- 20);
-    //context.fillText(text, 10, 10, width - 20)
   } else {
     context.fillStyle = '#000'
     context.fillRect(0, 0, width, height)

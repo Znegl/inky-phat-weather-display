@@ -190,6 +190,14 @@ async function redraw(retries = 0) {
  */
 async function applyText(text, isError) {
   console.log('apply text', text)
+  if (text === lastDisplayState.text && isError === lastDisplayState.isError) {
+    console.log('Ignoring redundant text update')
+    return;
+  }
+
+  lastDisplayState.text = text;
+  lastDisplayState.isError = isError;
+
   updateCanvas(text, isError)
 
   if (isPi()) {

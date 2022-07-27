@@ -1,6 +1,6 @@
 # Inky Phat Weather Display
 
-Reads temperature data from a Philips Hue motion sensor and displays the value on the Inky Phat.
+Reads temperature data from a any Home Assistant sensor or the temperature from a Philips Hue motion sensor and displays the value on the Inky Phat.
 The display is updated every 5 minutes.
 
 ## How it works
@@ -12,11 +12,13 @@ The PNG file is sent to the display using the GPIO pins.
 
 Create a file named `.env` in the root of the project with the following content:
 ```
-HUE_ADDRESS: <IP address of the Philips Hue hub>
-HUE_USER: <username for the Philips Hue API>
-HUE_SENSOR_ID: <ID of the temperature sensor to read>
-UPSIDE_DOWN: <optional - set to true if the display should be upside down>
-UPDATE_INTERVAL: <optional - an interval in ms. Defauts to 20000>
+HOST=<Address of the Home Assistant server Philips Hue hub. http/https must be included>
+KEY=<Home Assistant long lived key OR Philips Hue API username>
+PLATFORM=<'Home Assistant' or 'Philips Hue'>
+SENSOR_ID=<Home Assistant sensor entity name or Philips Hue sensor ID>
+UPSIDE_DOWN=<optional - set to true if the display should be upside down>
+UPDATE_INTERVAL=<optional - an interval in ms. Defauts to 20000>
+DECIMAL_SEPARATOR=<',', '.', or anything else you want for separating decimals>
 ```
 
 # Dependencies

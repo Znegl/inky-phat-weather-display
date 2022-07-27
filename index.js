@@ -10,8 +10,27 @@ const isPi = require('detect-rpi');
 const width = 212
 const height = 104
 
-// Philips Hue
-const hueUrl = `http://${process.env.HUE_ADDRESS}/api/${process.env.HUE_USER}/sensors/${process.env.HUE_SENSOR_ID}`
+const Platform = {
+  HOME_ASSISTANT: 'Home Assistant',
+  PHILIPS_HUE: 'Philips Hue',
+  UNKNOWN: 'Unknown'
+}
+
+let lastDisplayState = {text: '', isError: false};
+let apiUrl;
+let platform = process.env.PLATFORM;
+
+switch (process.env.PLATFORM) {
+  case Platform.HOME_ASSISTANT:
+    apiUrl = `${process.env.HOST}/api/states/${process.env.SENSOR_ID}`
+    break;
+  case Platform.PHILIPS_HUE:
+    apiUrl = `${process.env.HOST}/api/${process.env.KEY}/sensors/${process.env.SENSOR_ID}`
+    break;
+  default:
+    platform = Platform.UNKNOWN
+    break;
+}
 
 // Canvas setup
 const canvas = createCanvas(width, height)
@@ -41,7 +60,7 @@ function updateCanvas(text, isError) {
     context.textAlign = 'left'
     context.textBaseline = 'top'
     context.fillStyle = '#f00'
-    fillTextWordWrap(context, text, 10, 7, 15, width- 20);
+    fillTextWordWrap(context, text, 10, 7, 15, width - 20);
   } else {
     context.fillStyle = '#000'
     context.fillRect(0, 0, width, height)
@@ -187,19 +206,49 @@ async function applyText(text, isError) {
 async function update() {
   console.log('Update started')
 
-  axios.get(hueUrl).then(({data}) => {
-    console.log('got data', data.state.temperature)
-    const text = Math.round(data.state.temperature / 10) / 10 + '°'
+  switch (platform) {
+    case Platform.HOME_ASSISTANT:
+      axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${process.env.KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }).then(({data}) => {
+        console.log('got data', data.state)
+        let unit = data.attributes.unit_of_measurement
 
-    return applyText(
-      text
-        .replace('.', process.env.DECIMAL_SEPARATOR || '.')
-        .replace('-', '‐')
-    )
-  }).catch(error => {
-    console.error('axios error', error)
-    return applyText(error.message, true)
-  })
+        if (unit.indexOf('°') !== -1) {
+          unit = '°'
+        }
+
+        const text = Math.round(parseFloat(data.state) * 10) / 10 + unit
+
+        return applyText(
+          text
+            .replace('.', process.env.DECIMAL_SEPARATOR || '.')
+            .replace('-', '‐')
+        )
+      }).catch(error => {
+        console.error('axios error', error)
+        return applyText(error.message, true)
+      })
+      break;
+    case Platform.PHILIPS_HUE:
+      axios.get(apiUrl).then(({data}) => {
+        console.log('got data', data.state.temperature)
+        const text = Math.round(data.state.temperature / 10) / 10 + '°'
+
+        return applyText(
+          text
+            .replace('.', process.env.DECIMAL_SEPARATOR || '.')
+            .replace('-', '‐')
+        )
+      }).catch(error => {
+        console.error('axios error', error)
+        return applyText(error.message, true)
+      })
+      break;
+  }
 
   console.log('Update completed')
 }
@@ -211,6 +260,11 @@ async function update() {
 async function initialize() {
   if (isPi()) {
     await inkyphat.init();
+  }
+
+  if (platform === Platform.UNKNOWN) {
+    applyText('Unknown platform: ' + process.env.PLATFORM, true)
+    return;
   }
 
   await applyText('···')
